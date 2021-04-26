@@ -1,9 +1,10 @@
-import styles from './index.less';
+import { Link } from 'umi';
+import 'tailwindcss/tailwind.css';
 
 export default function IndexPage() {
   return (
-    <div>
-      <h1 className={styles.title}>后台管理子应用</h1>
+    <div className="h-full">
+      <Link to="/industry-chain">新建</Link>
     </div>
   );
 }
