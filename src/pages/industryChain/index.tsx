@@ -1,17 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './index.less';
 import { Dom, Graph } from '@antv/x6';
 import { Dnd } from '@antv/x6/es/addon';
+import Activity from '@/pages/components/Activity';
+import SubActivity from '@/pages/components/SubActivity';
 
 function IndustryChain() {
   const [graph, setGraph] = useState<Graph>();
   const [dnd, setDnd] = useState<Dnd>();
   const container = useRef<HTMLDivElement>(null);
+  const minimapContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setGraph(
       new Graph({
         container: container.current as any,
+        scroller: {
+          enabled: true,
+        },
+        minimap: {
+          enabled: true,
+          container: minimapContainer.current as any,
+        },
         preventDefaultContextMenu: false,
         resizing: {
           enabled: true,
@@ -28,16 +37,6 @@ function IndustryChain() {
     );
   }, [container]);
   useEffect(() => {
-    graph?.addNode({
-      x: 100,
-      y: 60,
-      shape: 'activity',
-    });
-    graph?.addNode({
-      x: 100,
-      y: 60,
-      shape: 'sub-activity',
-    });
     graph?.on('cell:dblclick', ({ cell, e }) => {
       const p = graph.clientToGraph(e.clientX, e.clientY);
       cell.addTools([
@@ -76,64 +75,28 @@ function IndustryChain() {
   const startDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');
-    const node =
-      type === 'rect'
-        ? graph?.createNode({
-            width: 100,
-            height: 40,
-            tools: {
-              name: 'button-remove', // 工具名称
-            },
-            attrs: {
-              label: {
-                text: 'Rect',
-                fill: '#6a6c8a',
-              },
-              body: {
-                stroke: '#31d0c6',
-                strokeWidth: 2,
-              },
-            },
-          })
-        : graph?.createNode({
-            width: 60,
-            height: 60,
-            shape: 'html',
-            html: () => {
-              const wrap = document.createElement('div');
-              wrap.style.width = '100%';
-              wrap.style.height = '100%';
-              wrap.style.display = 'flex';
-              wrap.style.alignItems = 'center';
-              wrap.style.justifyContent = 'center';
-              wrap.style.border = '2px solid rgb(49, 208, 198)';
-              wrap.style.background = '#fff';
-              wrap.style.borderRadius = '100%';
-              wrap.innerText = 'Circle';
-              return wrap;
-            },
-          });
-
+    const node = graph?.createNode({
+      width: 250,
+      height: 100,
+      tools: {
+        name: 'button-remove', // 工具名称
+      },
+      shape: type as string,
+    });
     dnd?.start(node as any, e.nativeEvent as any);
   };
   return (
     <div className="h-almost flex flex-col">
       <div className="bg-green-500">一些其辅助功能</div>
       <div className="flex-1 flex p-12">
-        <div className="flex flex-col items-center w-1/5 border-2 border-solid border-gray-50 mr-1">
+        <div className="flex flex-col items-center" style={{ width: 300 }}>
+          <div ref={minimapContainer} />
           <div
-            data-type="rect"
-            className={styles.dndRect}
-            onMouseDown={startDrag}
+            className="flex-1 flex flex-col items-center border-2 border-solid border-gray-50"
+            style={{ width: 290 }}
           >
-            Rect
-          </div>
-          <div
-            data-type="circle"
-            className={styles.dndCircle}
-            onMouseDown={startDrag}
-          >
-            Circle
+            <Activity onMouseDown={startDrag} />
+            <SubActivity onMouseDown={startDrag} />
           </div>
         </div>
         <div ref={container} className="flex-1" />

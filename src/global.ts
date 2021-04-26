@@ -157,12 +157,12 @@ Shape.Rect.define({
     body: {
       rx: 10, // 圆角矩形
       ry: 10,
-      strokeWidth: 1,
+      strokeWidth: 2,
       stroke: '#70e099',
     },
     text: {
       textWrap: {
-        text: '',
+        text: 'XXX活动',
         width: -10,
       },
     },
@@ -209,12 +209,12 @@ Shape.Rect.define({
     body: {
       rx: 10, // 圆角矩形
       ry: 10,
-      strokeWidth: 1,
+      strokeWidth: 1.5,
       stroke: '#70cfe0',
     },
     text: {
       textWrap: {
-        text: '',
+        text: 'XXX子活动',
         width: -10,
       },
     },
