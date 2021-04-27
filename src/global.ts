@@ -15,13 +15,18 @@ class EditableCellTool extends ToolsView.ToolItem<
   private editorContent: HTMLDivElement | undefined;
 
   render() {
+    // 判断工具是否渲染在小地图上
+    let temp = this.graph.container.style.width;
+    if (Number(temp.slice(0, temp.length - 2)) < 500) {
+      return this;
+    }
     super.render();
     const cell = this.cell;
+    console.log(this.graph.container.style.width);
     let x = 0;
     let y = 0;
     let width = 0;
     let height = 0;
-    console.log(cell);
     if (cell.isNode()) {
       const position = cell.position();
       const size = cell.size();
@@ -38,6 +43,7 @@ class EditableCellTool extends ToolsView.ToolItem<
       height = 40;
     }
 
+    // 文字编辑工具父节点
     const editorParent = ToolsView.createElement(
       'div',
       false,
@@ -48,15 +54,16 @@ class EditableCellTool extends ToolsView.ToolItem<
     editorParent.style.width = `${width}px`;
     editorParent.style.height = `${height}px`;
     editorParent.style.display = 'flex';
-    editorParent.style.alignItems = 'flex-start';
+    editorParent.style.alignItems = 'center';
     editorParent.style.textAlign = 'center';
 
+    // 文字编辑工具内容节点
     this.editorContent = ToolsView.createElement(
       'div',
       false,
     ) as HTMLDivElement;
     this.editorContent.contentEditable = 'true';
-    this.editorContent.className = 'relative text-xl -top-2.5';
+    this.editorContent.className = 'relative text-xl';
     this.editorContent.style.width = '100%';
     this.editorContent.style.outline = 'none';
     // @ts-ignore
@@ -233,6 +240,42 @@ Shape.Rect.define({
       refHeight: '100%',
       fill: '#ffffff',
       strokeWidth: 0,
+    },
+  },
+});
+
+// 自定义行业组件
+Shape.Rect.define({
+  shape: 'industry',
+  width: 150, // 默认宽度
+  height: 50, // 默认高度
+  markup: [
+    {
+      tagName: 'rect',
+      selector: 'body',
+    },
+    {
+      tagName: 'text',
+      selector: 'label',
+      className: 'text-lg',
+    },
+  ],
+  attrs: {
+    body: {
+      rx: 10, // 圆角矩形
+      ry: 10,
+      strokeWidth: 0,
+      fill: '#E0E7FF',
+    },
+    text: {
+      textWrap: {
+        text: 'XXX行业',
+        width: -10,
+      },
+    },
+    label: {
+      fill: '#6366F1',
+      fontSize: 14,
     },
   },
 });

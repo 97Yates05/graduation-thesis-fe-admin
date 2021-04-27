@@ -4,9 +4,12 @@ module.exports = {
   theme: {
     minWidth: {
       250: '250px',
+      150: '150px',
     },
     minHeight: {
       100: '100px',
+      80: '80px',
+      50: '50px',
     },
     extend: {
       height: {

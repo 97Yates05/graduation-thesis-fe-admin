@@ -3,6 +3,7 @@ import { Dom, Graph } from '@antv/x6';
 import { Dnd } from '@antv/x6/es/addon';
 import Activity from '@/pages/components/Activity';
 import SubActivity from '@/pages/components/SubActivity';
+import Industry from '@/pages/components/Industry';
 
 function IndustryChain() {
   const [graph, setGraph] = useState<Graph>();
@@ -17,6 +18,35 @@ function IndustryChain() {
         scroller: {
           enabled: true,
         },
+        // 限制子节点移动范围
+        translating: {
+          restrict(view) {
+            const cell = view.cell;
+            if (cell.isNode()) {
+              const parent = cell.getParent();
+              if (parent) {
+                return parent.getBBox();
+              }
+            }
+            return null;
+          },
+        },
+        // 嵌入子节点逻辑
+        embedding: {
+          enabled: true,
+          findParent({ node }) {
+            const bbox = node.getBBox();
+            return this.getNodes().filter((node) => {
+              const data = node.getData<any>();
+              if (data && data.parent) {
+                const targetBBox = node.getBBox();
+                return bbox.isIntersectWithRect(targetBBox);
+              }
+              return false;
+            });
+          },
+        },
+        // 小地图
         minimap: {
           enabled: true,
           container: minimapContainer.current as any,
@@ -24,8 +54,8 @@ function IndustryChain() {
         preventDefaultContextMenu: false,
         resizing: {
           enabled: true,
-          minWidth: 100,
-          minHeight: 40,
+          minWidth: 150,
+          minHeight: 50,
         },
         grid: {
           size: 10, // 网格大小 10px
@@ -38,6 +68,7 @@ function IndustryChain() {
   }, [container]);
   useEffect(() => {
     graph?.on('cell:dblclick', ({ cell, e }) => {
+      cell.removeTools();
       const p = graph.clientToGraph(e.clientX, e.clientY);
       cell.addTools([
         {
@@ -48,6 +79,19 @@ function IndustryChain() {
           },
         },
       ]);
+    });
+    graph?.on('node:mouseenter', ({ node }) => {
+      node.addTools({
+        name: 'button-remove',
+        args: {
+          x: 0,
+          y: 0,
+          offset: { x: 10, y: 10 },
+        },
+      });
+    });
+    graph?.on('node:mouseleave', ({ node }) => {
+      node.removeTool('button-remove');
     });
     setDnd(
       new Dnd({
@@ -78,10 +122,11 @@ function IndustryChain() {
     const node = graph?.createNode({
       width: 250,
       height: 100,
-      tools: {
-        name: 'button-remove', // 工具名称
-      },
       shape: type as string,
+      zIndex: type === 'activity' ? 1 : 100,
+      data: {
+        parent: true,
+      },
     });
     dnd?.start(node as any, e.nativeEvent as any);
   };
@@ -97,6 +142,7 @@ function IndustryChain() {
           >
             <Activity onMouseDown={startDrag} />
             <SubActivity onMouseDown={startDrag} />
+            <Industry onMouseDown={startDrag} />
           </div>
         </div>
         <div ref={container} className="flex-1" />
