@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dom, Graph } from '@antv/x6';
+import { Dom, Graph, Shape } from '@antv/x6';
 import { Dnd } from '@antv/x6/es/addon';
 import Activity from '@/pages/components/Activity';
 import SubActivity from '@/pages/components/SubActivity';
 import Industry from '@/pages/components/Industry';
+import { setGraphHandler } from '@/pages/util';
 
 function IndustryChain() {
   const [graph, setGraph] = useState<Graph>();
@@ -52,11 +53,34 @@ function IndustryChain() {
           container: minimapContainer.current as any,
         },
         preventDefaultContextMenu: false,
-        resizing: {
-          enabled: true,
-          minWidth: 150,
-          minHeight: 50,
+        // 连线逻辑
+        connecting: {
+          snap: true,
+          allowBlank: false,
+          allowLoop: false,
+          highlight: true,
+          connector: 'rounded',
+          connectionPoint: 'boundary',
+          createEdge() {
+            return new Shape.Edge({
+              attrs: {
+                line: {
+                  stroke: '#a0a0a0',
+                  strokeWidth: 2,
+                  targetMarker: {
+                    name: 'classic',
+                    size: 7,
+                  },
+                },
+              },
+            });
+          },
         },
+        // resizing: {
+        //   enabled: true,
+        //   minWidth: 150,
+        //   minHeight: 50,
+        // },
         grid: {
           size: 10, // 网格大小 10px
           visible: true, // 渲染网格背景
@@ -67,32 +91,8 @@ function IndustryChain() {
     );
   }, [container]);
   useEffect(() => {
-    graph?.on('cell:dblclick', ({ cell, e }) => {
-      cell.removeTools();
-      const p = graph.clientToGraph(e.clientX, e.clientY);
-      cell.addTools([
-        {
-          name: 'editableCell',
-          args: {
-            x: p.x,
-            y: p.y,
-          },
-        },
-      ]);
-    });
-    graph?.on('node:mouseenter', ({ node }) => {
-      node.addTools({
-        name: 'button-remove',
-        args: {
-          x: 0,
-          y: 0,
-          offset: { x: 10, y: 10 },
-        },
-      });
-    });
-    graph?.on('node:mouseleave', ({ node }) => {
-      node.removeTool('button-remove');
-    });
+    graph &&
+      setGraphHandler(graph as Graph, container.current as HTMLDivElement);
     setDnd(
       new Dnd({
         target: graph as any,

@@ -190,6 +190,75 @@ Shape.Rect.define({
       strokeWidth: 0,
     },
   },
+  ports: {
+    groups: {
+      group1: {
+        attrs: {
+          circle: {
+            r: 6,
+            magnet: true,
+            stroke: '#31d0c6',
+            strokeWidth: 2,
+            fill: '#fff',
+          },
+        },
+        position: 'left',
+      },
+      group2: {
+        attrs: {
+          circle: {
+            r: 6,
+            magnet: true,
+            stroke: '#31d0c6',
+            strokeWidth: 2,
+            fill: '#fff',
+          },
+        },
+        position: 'right',
+      },
+      group3: {
+        attrs: {
+          circle: {
+            r: 6,
+            magnet: true,
+            stroke: '#31d0c6',
+            strokeWidth: 2,
+            fill: '#fff',
+          },
+        },
+        position: 'top',
+      },
+      group4: {
+        attrs: {
+          circle: {
+            r: 6,
+            magnet: true,
+            stroke: '#31d0c6',
+            strokeWidth: 2,
+            fill: '#fff',
+          },
+        },
+        position: 'bottom',
+      },
+    },
+    items: [
+      {
+        group: 'group1',
+      },
+      {
+        group: 'group2',
+      },
+      {
+        group: 'group3',
+        args: {
+          dy: -15,
+        },
+      },
+      {
+        group: 'group4',
+      },
+    ],
+  },
 });
 
 // 自定义子活动组件
