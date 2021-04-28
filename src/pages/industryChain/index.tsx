@@ -5,12 +5,28 @@ import Activity from '@/pages/components/Activity';
 import SubActivity from '@/pages/components/SubActivity';
 import Industry from '@/pages/components/Industry';
 import { setGraphHandler } from '@/pages/util';
+import MyToolbar from '@/pages/components/MyToolbar';
+import { Input } from 'antd';
 
-function IndustryChain() {
+interface Prop {
+  location: Location & {
+    query: {
+      id: string;
+    };
+    state: {
+      name: string;
+    };
+  };
+}
+function IndustryChain({ location }: Prop) {
+  const [chainId] = useState(location.query.id);
+  const [chainName, setChainName] = useState(location.state.name);
+  const [isEdit, setIsEdit] = useState(false);
   const [graph, setGraph] = useState<Graph>();
   const [dnd, setDnd] = useState<Dnd>();
   const container = useRef<HTMLDivElement>(null);
   const minimapContainer = useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<any>(null);
 
   useEffect(() => {
     setGraph(
@@ -115,6 +131,13 @@ function IndustryChain() {
       }),
     );
   }, [graph]);
+  useEffect(() => {
+    if (isEdit) {
+      inputRef.current.focus({
+        cursor: 'end',
+      });
+    }
+  }, [isEdit]);
 
   const startDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const target = e.currentTarget;
@@ -130,9 +153,45 @@ function IndustryChain() {
     });
     dnd?.start(node as any, e.nativeEvent as any);
   };
+  const handleClick = () => {
+    setIsEdit(true);
+  };
+  const handleChange = (e: any) => {
+    setChainName(e.target.value);
+  };
+  const handleBlur = () => {
+    if (chainName === '') {
+      setChainName('未命名文件');
+    }
+    setIsEdit(false);
+  };
   return (
     <div className="h-almost flex flex-col">
-      <div className="bg-green-500">一些其辅助功能</div>
+      <div className="px-10">
+        <div className="min-h-80 w-80 flex items-center">
+          {isEdit ? (
+            <Input
+              className="text-lg"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              ref={inputRef}
+              value={chainName}
+            />
+          ) : (
+            <div
+              className="inline-block my-2 p-2 text-gray-500 text-xl rounded-sm hover:bg-gray-200 cursor-pointer"
+              onClick={handleClick}
+            >
+              {chainName}
+            </div>
+          )}
+        </div>
+        <MyToolbar
+          graph={graph as Graph}
+          chainId={chainId}
+          chainName={chainName}
+        />
+      </div>
       <div className="flex-1 flex p-12">
         <div className="flex flex-col items-center" style={{ width: 300 }}>
           <div ref={minimapContainer} />

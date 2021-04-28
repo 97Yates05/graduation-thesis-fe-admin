@@ -1,4 +1,6 @@
 import { EdgeView, Graph, Point, Shape, ToolsView } from '@antv/x6';
+import request from 'umi-request';
+import { notification } from 'antd';
 
 export interface EditableCellToolOptions extends ToolsView.ToolItem.Options {
   x: number;
@@ -347,4 +349,15 @@ Shape.Rect.define({
       fontSize: 14,
     },
   },
+});
+
+request.use(async (ctx, next) => {
+  await next();
+  console.log(ctx);
+  const { req, res } = ctx;
+  notification.info({
+    message: `${req.url}接口响应`,
+    description: JSON.stringify(res),
+    duration: 0,
+  });
 });

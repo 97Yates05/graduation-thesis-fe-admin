@@ -1,6 +1,7 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
+  antd: {},
   extraPostCSSPlugins: [require('tailwindcss'), require('autoprefixer')],
   nodeModulesTransform: {
     type: 'none',
