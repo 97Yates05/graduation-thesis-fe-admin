@@ -11,12 +11,29 @@ interface Prop {
   graph: Graph;
 }
 const autoSave = async (graph: Graph, chainId: string, chainName: string) => {
-  return request.put(`/api/industry-chain/${chainId}`, {
-    data: {
-      id: chainId,
-      name: chainName,
-      detail: JSON.stringify(graph?.toJSON()) || '',
-    },
+  return new Promise((resolve, reject) => {
+    graph?.toPNG(
+      (dataUri: string) => {
+        resolve(dataUri);
+      },
+      {
+        padding: {
+          top: 20,
+          right: 30,
+          bottom: 20,
+          left: 30,
+        },
+      },
+    );
+  }).then((value) => {
+    return request.put(`/api/industry-chain/${chainId}`, {
+      data: {
+        id: chainId,
+        name: chainName,
+        detail: JSON.stringify(graph?.toJSON()) || '',
+        preview: value,
+      },
+    });
   });
 };
 function MyToolbar({ graph, chainId, chainName }: Prop) {
