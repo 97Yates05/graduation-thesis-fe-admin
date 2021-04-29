@@ -2,6 +2,7 @@ import { history } from 'umi';
 import 'tailwindcss/tailwind.css';
 import { Button } from 'antd';
 import request from 'umi-request';
+import List from '@/pages/components/List';
 
 export default function IndexPage() {
   const handleCreate = async () => {
@@ -21,10 +22,11 @@ export default function IndexPage() {
     });
   };
   return (
-    <div className="h-full flex items-center justify-center text-gray-500">
+    <div className="h-full flex flex-col items-center justify-center text-gray-500">
       <Button type="primary" onClick={handleCreate}>
         新建
       </Button>
+      <List />
     </div>
   );
 }

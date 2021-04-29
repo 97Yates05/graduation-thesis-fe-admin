@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import { RedoOutlined, SyncOutlined, UndoOutlined } from '@ant-design/icons';
 import { Graph } from '@antv/x6';
@@ -37,7 +37,7 @@ const autoSave = async (graph: Graph, chainId: string, chainName: string) => {
   });
 };
 function MyToolbar({ graph, chainId, chainName }: Prop) {
-  const { data, error, loading } = useRequest(
+  const { run, loading } = useRequest(
     () => {
       return autoSave(graph, chainId, chainName);
     },
@@ -46,6 +46,14 @@ function MyToolbar({ graph, chainId, chainName }: Prop) {
       refreshDeps: [graph, chainId, chainName],
     },
   );
+
+  useEffect(() => {
+    let interval = setInterval(() => {
+      run();
+    }, 1000 * 60);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="border-solid border-1 border-gray-200">

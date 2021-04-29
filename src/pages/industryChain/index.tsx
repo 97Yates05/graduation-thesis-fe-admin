@@ -7,6 +7,8 @@ import Industry from '@/pages/components/Industry';
 import { setGraphHandler } from '@/pages/util';
 import MyToolbar from '@/pages/components/MyToolbar';
 import { Input } from 'antd';
+import { useRequest } from 'umi';
+import { fetchData } from '@/pages/service';
 
 interface Prop {
   location: Location & {
@@ -27,6 +29,14 @@ function IndustryChain({ location }: Prop) {
   const container = useRef<HTMLDivElement>(null);
   const minimapContainer = useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<any>(null);
+  const { data } = useRequest(
+    () => {
+      return fetchData(chainId);
+    },
+    {
+      formatResult: (res) => res,
+    },
+  );
 
   useEffect(() => {
     setGraph(
@@ -107,30 +117,36 @@ function IndustryChain({ location }: Prop) {
     );
   }, [container]);
   useEffect(() => {
-    graph &&
+    if (graph) {
       setGraphHandler(graph as Graph, container.current as HTMLDivElement);
-    setDnd(
-      new Dnd({
-        target: graph as any,
-        scaled: false,
-        animation: true,
-        validateNode(droppingNode, options) {
-          return droppingNode.shape === 'html'
-            ? new Promise<boolean>((resolve) => {
-                const { draggingNode, draggingGraph } = options;
-                const view = draggingGraph.findView(draggingNode)!;
-                const contentElem = view.findOne('foreignObject > body > div');
-                Dom.addClass(contentElem, 'validating');
-                setTimeout(() => {
-                  Dom.removeClass(contentElem, 'validating');
-                  resolve(true);
-                }, 3000);
-              })
-            : true;
-        },
-      }),
-    );
-  }, [graph]);
+      setDnd(
+        new Dnd({
+          target: graph as any,
+          scaled: false,
+          animation: true,
+          validateNode(droppingNode, options) {
+            return droppingNode.shape === 'html'
+              ? new Promise<boolean>((resolve) => {
+                  const { draggingNode, draggingGraph } = options;
+                  const view = draggingGraph.findView(draggingNode)!;
+                  const contentElem = view.findOne(
+                    'foreignObject > body > div',
+                  );
+                  Dom.addClass(contentElem, 'validating');
+                  setTimeout(() => {
+                    Dom.removeClass(contentElem, 'validating');
+                    resolve(true);
+                  }, 3000);
+                })
+              : true;
+          },
+        }),
+      );
+    }
+    if (graph && data) {
+      graph.fromJSON(JSON.parse(data.detail));
+    }
+  }, [graph, data]);
   useEffect(() => {
     if (isEdit) {
       inputRef.current.focus({
