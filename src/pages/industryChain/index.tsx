@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dom, Graph, Shape } from '@antv/x6';
+import { Cell, Dom, Graph, Node, Shape } from '@antv/x6';
 import { Dnd } from '@antv/x6/es/addon';
 import Activity from '@/pages/components/Activity';
 import SubActivity from '@/pages/components/SubActivity';
 import Industry from '@/pages/components/Industry';
 import { setGraphHandler } from '@/pages/util';
 import MyToolbar from '@/pages/components/MyToolbar';
-import { Input } from 'antd';
+import { Input, Modal } from 'antd';
 import { useRequest } from 'umi';
-import { fetchData } from '@/pages/service';
+import { fetchIndustryChain } from '@/pages/service';
+import IndustrySearch from '@/pages/components/IndustrySearch';
 
 interface Prop {
   location: Location & {
@@ -24,14 +25,16 @@ function IndustryChain({ location }: Prop) {
   const [chainId] = useState(location.query.id);
   const [chainName, setChainName] = useState(location.state.name);
   const [isEdit, setIsEdit] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [node, setNode] = useState<Cell<Node.Properties>>();
   const [graph, setGraph] = useState<Graph>();
   const [dnd, setDnd] = useState<Dnd>();
   const container = useRef<HTMLDivElement>(null);
   const minimapContainer = useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<any>(null);
-  const { data } = useRequest(
+  const { data: IndustryChainData } = useRequest(
     () => {
-      return fetchData(chainId);
+      return fetchIndustryChain(chainId);
     },
     {
       formatResult: (res) => res,
@@ -119,6 +122,14 @@ function IndustryChain({ location }: Prop) {
   useEffect(() => {
     if (graph) {
       setGraphHandler(graph as Graph, container.current as HTMLDivElement);
+      // 通用节点Cell监听事件
+      graph.on('node:dblclick', ({ cell, e }) => {
+        cell.removeTools();
+        if (cell.shape === 'industry') {
+          setIsModalVisible(true);
+          setNode(cell);
+        }
+      });
       setDnd(
         new Dnd({
           target: graph as any,
@@ -143,10 +154,10 @@ function IndustryChain({ location }: Prop) {
         }),
       );
     }
-    if (graph && data) {
-      graph.fromJSON(JSON.parse(data.detail));
+    if (graph && IndustryChainData) {
+      graph.fromJSON(JSON.parse(IndustryChainData.detail));
     }
-  }, [graph, data]);
+  }, [graph, IndustryChainData]);
   useEffect(() => {
     if (isEdit) {
       inputRef.current.focus({
@@ -183,6 +194,20 @@ function IndustryChain({ location }: Prop) {
   };
   return (
     <div className="h-almost flex flex-col">
+      <Modal
+        title="Basic Modal"
+        visible={isModalVisible}
+        onOk={() => {
+          setIsModalVisible(false);
+        }}
+        footer={null}
+        onCancel={() => {
+          setIsModalVisible(false);
+        }}
+      >
+        <IndustrySearch node={node as any} />
+      </Modal>
+
       <div className="px-10">
         <div className="min-h-80 w-80 flex items-center">
           {isEdit ? (

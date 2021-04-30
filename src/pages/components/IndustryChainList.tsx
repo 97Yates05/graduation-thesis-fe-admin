@@ -13,7 +13,7 @@ const getList = (): Promise<{
 }> => {
   return request.get('/api/industry-chain');
 };
-function List() {
+function IndustryChainList() {
   const { data, error, loading } = useRequest(() => {
     return getList();
   });
@@ -57,4 +57,4 @@ function List() {
   );
 }
 
-export default List;
+export default IndustryChainList;

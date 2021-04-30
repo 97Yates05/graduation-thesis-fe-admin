@@ -2,7 +2,7 @@ import { history } from 'umi';
 import 'tailwindcss/tailwind.css';
 import { Button } from 'antd';
 import request from 'umi-request';
-import List from '@/pages/components/List';
+import IndustryChainList from '@/pages/components/IndustryChainList';
 
 export default function IndexPage() {
   const handleCreate = async () => {
@@ -26,7 +26,7 @@ export default function IndexPage() {
       <Button type="primary" onClick={handleCreate}>
         新建
       </Button>
-      <List />
+      <IndustryChainList />
     </div>
   );
 }

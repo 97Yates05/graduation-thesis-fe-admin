@@ -22,7 +22,6 @@ class EditableCellTool extends ToolsView.ToolItem<
     }
     super.render();
     const cell = this.cell;
-    console.log(this.graph.container.style.width);
     let x = 0;
     let y = 0;
     let width = 0;
@@ -338,7 +337,7 @@ Shape.Rect.define({
     },
     text: {
       textWrap: {
-        text: 'XXX行业',
+        text: 'XXX产业',
         width: -10,
       },
     },

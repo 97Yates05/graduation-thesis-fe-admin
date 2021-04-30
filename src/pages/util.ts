@@ -14,15 +14,17 @@ export const setGraphHandler = (graph: Graph, container: HTMLDivElement) => {
   graph.on('cell:dblclick', ({ cell, e }) => {
     cell.removeTools();
     const p = graph.clientToGraph(e.clientX, e.clientY);
-    cell.addTools([
-      {
-        name: 'editableCell',
-        args: {
-          x: p.x,
-          y: p.y,
+    if (cell.shape !== 'industry') {
+      cell.addTools([
+        {
+          name: 'editableCell',
+          args: {
+            x: p.x,
+            y: p.y,
+          },
         },
-      },
-    ]);
+      ]);
+    }
   });
   graph.on('cell:mouseenter', ({ cell }) => {
     cell.addTools({
