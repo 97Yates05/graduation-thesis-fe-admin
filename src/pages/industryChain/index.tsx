@@ -195,7 +195,7 @@ function IndustryChain({ location }: Prop) {
   return (
     <div className="h-almost flex flex-col">
       <Modal
-        title="Basic Modal"
+        title="选择产业"
         visible={isModalVisible}
         onOk={() => {
           setIsModalVisible(false);

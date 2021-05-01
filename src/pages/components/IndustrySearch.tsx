@@ -14,6 +14,7 @@ function IndustrySearch({ node }: Props) {
       return fetchIndustry(value);
     },
     {
+      formatResult: (res) => res,
       refreshDeps: [value],
     },
   );
@@ -25,6 +26,7 @@ function IndustrySearch({ node }: Props) {
   };
   return (
     <Select
+      className="w-36"
       showSearch
       searchValue={value}
       placeholder="搜索行业"

@@ -13,14 +13,13 @@ export const fetchIndustryChain = (
 
 export const fetchIndustry = (
   name: string,
-): Promise<{
-  total: number;
-  data: {
+): Promise<
+  {
     _id: string;
     name: string;
-  }[];
-}> => {
-  return request.get('/api/industry', {
+  }[]
+> => {
+  return request.get('/api/industry/list', {
     params: { name },
   });
 };
